@@ -10,7 +10,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 3001
+        value: 10000
       - key: TOKEN_MINT
         value: 3RNx8fsFmumKhypgL8KdiGvvopBkiaWNNMg4zNPLpump
       - key: TOKEN_DECIMALS
