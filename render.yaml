@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: omegazoid-burn-api
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: TOKEN_MINT
+        value: 3RNx8fsFmumKhypgL8KdiGvvopBkiaWNNMg4zNPLpump
+      - key: TOKEN_DECIMALS
+        value: 6

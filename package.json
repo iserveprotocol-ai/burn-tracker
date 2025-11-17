@@ -1,0 +1,29 @@
+{
+  "name": "omegazoid-burn-tracker",
+  "version": "1.0.0",
+  "description": "OmegaZoid token burn tracker for Solana blockchain",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "track": "node track-burns.js",
+    "dev": "nodemon server.js",
+    "verify": "node -e \"require('./services/token-verifier').verifyToken().then(r => console.log(r))\"",
+    "test-rpc": "node -e \"require('./services/token-verifier').testRPCEndpoints().then(r => console.log(r))\""
+  },
+  "keywords": [
+    "solana",
+    "burn",
+    "tracker",
+    "omegazoid"
+  ],
+  "author": "OmegaZoid Team",
+  "license": "MIT",
+  "dependencies": {
+    "@solana/web3.js": "^1.87.6",
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
