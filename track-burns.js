@@ -6,6 +6,8 @@
 
 const solanaWeb3 = require('@solana/web3.js');
 const { Connection, PublicKey } = solanaWeb3;
+const fs = require('fs').promises;
+const path = require('path');
 
 // Configuration
 const TOKEN_MINT = '3RNx8fsFmumKhypgL8KdiGvvopBkiaWNNMg4zNPLpump';
@@ -14,13 +16,54 @@ const BURN_ADDRESS = '1nc1nerator11111111111111111111111111111111';
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY || '4d9203cb-518a-4cbd-a661-d8e3105a2954';
 const RPC_ENDPOINT = `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`;
 
+// Data file path
+const DATA_FILE = path.join(__dirname, 'burn-data.json');
+
 // Initialize connection
 const connection = new Connection(RPC_ENDPOINT, 'confirmed');
 
-// In-memory storage (replace with database in production)
+// In-memory storage (loaded from file on startup)
 let burnHistory = [];
 let totalBurned = 0;
 let lastSignature = null;
+
+/**
+ * Load burn data from disk
+ */
+async function loadDataFromDisk() {
+    try {
+        const data = await fs.readFile(DATA_FILE, 'utf-8');
+        const parsed = JSON.parse(data);
+        burnHistory = parsed.burnHistory || [];
+        totalBurned = parsed.totalBurned || 0;
+        lastSignature = parsed.lastSignature || null;
+        console.log(`📂 Loaded ${burnHistory.length} burns from disk (${totalBurned.toLocaleString()} total burned)`);
+    } catch (error) {
+        if (error.code === 'ENOENT') {
+            console.log('📂 No existing data file, starting fresh');
+        } else {
+            console.error('Error loading data:', error);
+        }
+    }
+}
+
+/**
+ * Save burn data to disk
+ */
+async function saveDataToDisk() {
+    try {
+        const data = {
+            burnHistory,
+            totalBurned,
+            lastSignature,
+            lastUpdated: new Date().toISOString()
+        };
+        await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2));
+        console.log('💾 Data saved to disk');
+    } catch (error) {
+        console.error('Error saving data:', error);
+    }
+}
 
 /**
  * Get associated token address
@@ -46,6 +89,9 @@ async function getAssociatedTokenAddress(ownerPublicKey, mintPublicKey, tokenPro
  */
 async function fetchHistoricalBurns(limit = 100) {
     try {
+        // Load existing data from disk first
+        await loadDataFromDisk();
+        
         console.log('📊 Fetching historical burns...');
         
         // Clear existing data to avoid duplicates
@@ -112,6 +158,9 @@ async function fetchHistoricalBurns(limit = 100) {
         console.log(`✅ Processed ${burnHistory.length} burns`);
         console.log(`🔥 Total burned: ${totalBurned.toLocaleString()} $OZOID`);
         
+        // Save to disk
+        await saveDataToDisk();
+        
         return burnHistory;
     } catch (error) {
         console.error('Error fetching historical burns:', error);
@@ -173,6 +222,9 @@ async function monitorBurns() {
                             console.log(`💎 Amount: ${amount.toLocaleString()} $OZOID`);
                             console.log(`👤 Burner: ${burner}`);
                             console.log(`🏆 Reward: ${reward}`);
+                            
+                            // Save to disk
+                            await saveDataToDisk();
                             
                             // Notify about the burn
                             await notifyBurn(burnEvent);
