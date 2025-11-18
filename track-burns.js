@@ -48,6 +48,10 @@ async function fetchHistoricalBurns(limit = 100) {
     try {
         console.log('📊 Fetching historical burns...');
         
+        // Clear existing data to avoid duplicates
+        burnHistory = [];
+        totalBurned = 0;
+        
         const burnPublicKey = new PublicKey(BURN_ADDRESS);
         const mintPublicKey = new PublicKey(TOKEN_MINT);
         
@@ -62,8 +66,18 @@ async function fetchHistoricalBurns(limit = 100) {
         
         console.log(`Found ${signatures.length} transactions`);
         
+        // Track seen signatures to avoid duplicates
+        const seenSignatures = new Set();
+        
         // Process each transaction
         for (const sig of signatures) {
+            // Skip if already processed
+            if (seenSignatures.has(sig.signature)) {
+                console.log('Skipping duplicate:', sig.signature.substring(0, 8));
+                continue;
+            }
+            seenSignatures.add(sig.signature);
+            
             const tx = await connection.getParsedTransaction(sig.signature, 'confirmed');
             
             if (!tx || !tx.meta) continue;
