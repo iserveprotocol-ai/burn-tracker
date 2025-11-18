@@ -208,6 +208,33 @@ app.get('/api/burns/recent', async (req, res) => {
 });
 
 /**
+ * POST /api/burns/rescan
+ * Force rescan of blockchain for burns
+ */
+app.post('/api/burns/rescan', async (req, res) => {
+    try {
+        console.log('🔄 Forcing blockchain rescan...');
+        await fetchHistoricalBurns(200); // Scan last 200 transactions
+        const stats = getStats();
+        
+        res.json({
+            success: true,
+            message: 'Rescan completed',
+            data: {
+                totalBurned: stats.totalBurned,
+                totalBurns: stats.totalBurns
+            }
+        });
+    } catch (error) {
+        console.error('Error rescanning:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to rescan blockchain'
+        });
+    }
+});
+
+/**
  * GET /api/token/verify
  * Verify token exists on mainnet
  */
