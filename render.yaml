@@ -16,3 +16,5 @@ services:
         value: 3RNx8fsFmumKhypgL8KdiGvvopBkiaWNNMg4zNPLpump
       - key: TOKEN_DECIMALS
         value: 6
+      - key: HELIUS_API_KEY
+        value: 4d9203cb-518a-4cbd-a661-d8e3105a2954

@@ -10,7 +10,9 @@ const { Connection, PublicKey } = solanaWeb3;
 // Configuration
 const TOKEN_MINT = '3RNx8fsFmumKhypgL8KdiGvvopBkiaWNNMg4zNPLpump';
 const BURN_ADDRESS = '1nc1nerator11111111111111111111111111111111';
-const RPC_ENDPOINT = process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
+// Use Helius RPC with API key to avoid 429 rate limits
+const HELIUS_API_KEY = process.env.HELIUS_API_KEY || '4d9203cb-518a-4cbd-a661-d8e3105a2954';
+const RPC_ENDPOINT = `https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`;
 
 // Initialize connection
 const connection = new Connection(RPC_ENDPOINT, 'confirmed');
