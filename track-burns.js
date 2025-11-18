@@ -25,8 +25,9 @@ let lastSignature = null;
 /**
  * Get associated token address
  */
-async function getAssociatedTokenAddress(ownerPublicKey, mintPublicKey) {
-    const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+async function getAssociatedTokenAddress(ownerPublicKey, mintPublicKey, tokenProgramId) {
+    // Support both Token Program and Token-2022
+    const TOKEN_PROGRAM_ID = tokenProgramId || new PublicKey('TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb'); // Token-2022 for pump.fun
     const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
     
     const [address] = await PublicKey.findProgramAddress(
